@@ -100,7 +100,6 @@ if exc_epoc: motivos_exclusion.append("Enfermedad respiratoria crónica terminal
 # PANEL SUPERIOR DE RESOLUCIÓN MÉDICA
 # ==========================================
 st.markdown("---")
-# Utilizo contenedores para posicionar la alerta visualmente destacada
 alerta_container = st.container()
 
 with alerta_container:
@@ -109,3 +108,25 @@ with alerta_container:
         st.error(f"**⚠️ RECOMENDACIÓN DE LIMITACIÓN DEL ESFUERZO TERAPÉUTICO (LET)**\n\nEl paciente presenta predictores de futilidad clínica para medidas invasivas:\n{texto_motivos}\n\n*Acción sugerida: Reevaluar el ingreso a UCI y considerar abordaje paliativo. Puntaje Barthel actual: {puntaje_barthel}/100.*", icon="🚨")
     else:
         st.success(f"**✅ CUALIFICA PARA INGRESO / SOPORTE TOTAL**\n\nReserva funcional aceptable. Barthel calculado: {puntaje_barthel}/100. No se detectan contraindicaciones absolutas derivadas del performance status previo.", icon="✅")
+
+# ==========================================
+# MARCO TEÓRICO Y BIBLIOGRAFÍA (EXPANDER)
+# ==========================================
+st.markdown("<br>", unsafe_allow_html=True)
+with st.expander("📚 Ver Marco Teórico y Sustento Bibliográfico", expanded=False):
+    st.markdown("""
+    ### Fundamento Bioético y Operativo
+    El ingreso a la Unidad de Cuidados Intensivos (UCI) se rige por el principio de **proporcionalidad terapéutica**. Evitar el ingreso de pacientes con enfermedades irreversibles en estadio terminal, fragilidad severa o dependencia total previene la **distanasia** (encarnizamiento terapéutico) y asegura una correcta asignación del recurso cama para pacientes con potencial de recuperación funcional y calidad de vida aceptable.
+
+    ### Justificación de las Escalas de Valoración
+    * **Clinical Frailty Scale (CFS):** Desarrollada y validada por Rockwood et al. Un puntaje **$\ge$ 7** (fragilidad severa) es un predictor independiente de mortalidad a corto plazo (>60% en pacientes bajo ventilación mecánica invasiva) y predice un deterioro funcional catastrófico en los supervivientes tras el alta hospitalaria.
+    * **Performance Status (ECOG / OMS):** Define el impacto de la enfermedad crónica en la autonomía. Un **ECOG 4** (confinamiento total a cama/silla) representa un límite ético consensuado para el inicio de terapias de soporte orgánico pleno.
+    * **Índice de Barthel (ABVD):** Herramienta estándar para medir la dependencia en las Actividades Básicas de la Vida Diaria. Un puntaje consolidado **< 20** indica dependencia total y es un fuerte predictor de mala evolución y futilidad terapéutica en el entorno crítico.
+    * **Escala FAST:** Un estadio **7** (demencia avanzada, pérdida de la marcha y del lenguaje) se categoriza como una enfermedad terminal de trayectoria final predecible, sugiriendo un viraje inmediato hacia los cuidados paliativos.
+
+    ### Fuentes y Guías Intersocietarias
+    1.  **Society of Critical Care Medicine (SCCM):** *Guidelines for ICU Admission, Discharge, and Triage.* Establece los estratos de priorización, recomendando no admitir a pacientes de "Prioridad 4" (aquellos sin beneficio terapéutico esperado por futilidad).
+    2.  **Sociedad Argentina de Terapia Intensiva (SAT) / European Society of Intensive Care Medicine (ESICM):** Consensos sobre bioética, triage y adecuación del esfuerzo terapéutico (LET).
+    3.  **Cochrane Database of Systematic Reviews & PubMed:** Metaanálisis recientes sobre el impacto de la ventilación mecánica y las terapias de reemplazo renal en poblaciones ancianas con alta fragilidad basal.
+    4.  **UpToDate:** *Ethics in the intensive care unit: Responding to requests for potentially inappropriate therapies* y *ICU admission and discharge criteria.*
+    """)
