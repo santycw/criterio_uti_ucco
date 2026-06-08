@@ -67,4 +67,45 @@ with col_izq:
         retrete = st.selectbox("Uso Retrete:", list(b_3_opc.keys()), key='retrete')
         traslado = st.selectbox("Traslado:", list(b_traslado.keys()), key='traslado')
         deambular = st.selectbox("Deambular:", list(b_deambular.keys()), key='deambular')
-        escaleras = st.selectbox("Escaleras:", list(b_3_opc.
+        escaleras = st.selectbox("Escaleras:", list(b_3_opc.keys()), key='escaleras')
+
+with col_der:
+    st.subheader("B. Criterios de Exclusión")
+    st.markdown("*(Comorbilidades Crónicas Terminales)*")
+    exc_onco = st.checkbox("Oncológico Terminal / Metástasis refractaria")
+    exc_epoc = st.checkbox("EPOC Severo / O2 Dependiente basal")
+
+# ==========================================
+# MOTOR LÓGICO Y CÁLCULO DE ALERTAS
+# ==========================================
+puntaje_barthel = (
+    b_3_opc[comer] + b_2_opc[lavarse] + b_3_opc[vestirse] + b_2_opc[arreglarse] +
+    b_esfinteres[deposiciones] + b_esfinteres[miccion] + b_3_opc[retrete] +
+    b_traslado[traslado] + b_deambular[deambular] + b_3_opc[escaleras]
+)
+
+cfs_val = cfs_dict[sel_cfs]
+ecog_val = ecog_dict[sel_ecog]
+fast_val = fast_dict[sel_fast]
+
+motivos_exclusion = []
+if cfs_val >= 7: motivos_exclusion.append(f"Fragilidad Severa (CFS {cfs_val})")
+if ecog_val == 4: motivos_exclusion.append("Performance Status basal ECOG 4")
+if puntaje_barthel < 20: motivos_exclusion.append(f"Dependencia total en ABVD (Barthel {puntaje_barthel}/100)")
+if fast_val == '7': motivos_exclusion.append("Demencia en estadio avanzado (FAST 7)")
+if exc_onco: motivos_exclusion.append("Enfermedad oncológica terminal")
+if exc_epoc: motivos_exclusion.append("Enfermedad respiratoria crónica terminal")
+
+# ==========================================
+# PANEL SUPERIOR DE RESOLUCIÓN MÉDICA
+# ==========================================
+st.markdown("---")
+# Utilizo contenedores para posicionar la alerta visualmente destacada
+alerta_container = st.container()
+
+with alerta_container:
+    if len(motivos_exclusion) > 0:
+        texto_motivos = "\n".join([f"- {m}" for m in motivos_exclusion])
+        st.error(f"**⚠️ RECOMENDACIÓN DE LIMITACIÓN DEL ESFUERZO TERAPÉUTICO (LET)**\n\nEl paciente presenta predictores de futilidad clínica para medidas invasivas:\n{texto_motivos}\n\n*Acción sugerida: Reevaluar el ingreso a UCI y considerar abordaje paliativo. Puntaje Barthel actual: {puntaje_barthel}/100.*", icon="🚨")
+    else:
+        st.success(f"**✅ CUALIFICA PARA INGRESO / SOPORTE TOTAL**\n\nReserva funcional aceptable. Barthel calculado: {puntaje_barthel}/100. No se detectan contraindicaciones absolutas derivadas del performance status previo.", icon="✅")
