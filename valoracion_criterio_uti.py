@@ -1,14 +1,14 @@
 import streamlit as st
 
 # ==========================================
-# CONFIGURACIÓN DE PÁGINA
+# 1. CONFIGURACIÓN DE PÁGINA
 # ==========================================
 st.set_page_config(page_title="Triage UCI", page_icon="🏥", layout="wide")
 st.markdown("<h1 style='text-align: center; color: #2c3e50;'>Protocolo de Triage y Reserva Funcional UCI</h1>", unsafe_allow_html=True)
 st.markdown("---")
 
 # ==========================================
-# DICCIONARIOS MÉDICOS
+# 2. DICCIONARIOS MÉDICOS
 # ==========================================
 cfs_dict = {
     '1 - Muy en forma: Robusto, activo, enérgico.': 1,
@@ -31,12 +31,16 @@ ecog_dict = {
 }
 
 fast_dict = {
-    '1 - Normal.': '1', '2 - Olvido normal.': '2', '3 - Deterioro cognitivo leve.': '3',
-    '4 - Leve (Dificultad en tareas complejas).': '4', '5 - Moderada (Requiere ayuda para elegir ropa).': '5',
-    '6 - Moderadamente severa (Ayuda para ABVD).': '6', '7 - Severa (Pérdida de habla, deambulación).': '7'
+    '1 - Normal.': '1', 
+    '2 - Olvido normal.': '2', 
+    '3 - Deterioro cognitivo leve.': '3',
+    '4 - Leve (Dificultad en tareas complejas).': '4', 
+    '5 - Moderada (Requiere ayuda para elegir ropa).': '5',
+    '6 - Moderadamente severa (Ayuda para ABVD).': '6', 
+    '7 - Severa (Pérdida de habla, deambulación).': '7'
 }
 
-# Puntajes de Barthel
+# Ponderaciones del Índice de Barthel
 b_3_opc = {'Independiente': 10, 'Necesita ayuda': 5, 'Dependiente': 0}
 b_2_opc = {'Independiente': 5, 'Dependiente': 0}
 b_esfinteres = {'Continente': 10, 'Accidente ocasional': 5, 'Incontinente': 0}
@@ -44,7 +48,7 @@ b_traslado = {'Independiente': 15, 'Mínima ayuda': 10, 'Gran ayuda': 5, 'Depend
 b_deambular = {'Independiente': 15, 'Necesita ayuda': 10, 'Independiente silla ruedas': 5, 'Dependiente': 0}
 
 # ==========================================
-# INTERFAZ DE USUARIO (GRID LAYOUT)
+# 3. INTERFAZ DE USUARIO (GRID LAYOUT)
 # ==========================================
 col_izq, col_der = st.columns([1.2, 1])
 
@@ -76,11 +80,11 @@ with col_der:
     exc_epoc = st.checkbox("EPOC Severo / O2 Dependiente basal")
 
 # ==========================================
-# MOTOR LÓGICO Y CÁLCULO DE ALERTAS
+# 4. MOTOR LÓGICO Y CÁLCULO DE ALERTAS
 # ==========================================
 puntaje_barthel = (
-    b_3_opc[comer] + b_2_opc[lavarse] + b_3_opc[vestirse] + b_2_opc[arreglarse] +
-    b_esfinteres[deposiciones] + b_esfinteres[miccion] + b_3_opc[retrete] +
+    b_3_opc[comer] + b_2_opc[lavarse] + b_3_opc[vestirse] + b_2_opc[arreglarse] + 
+    b_esfinteres[deposiciones] + b_esfinteres[miccion] + b_3_opc[retrete] + 
     b_traslado[traslado] + b_deambular[deambular] + b_3_opc[escaleras]
 )
 
@@ -97,7 +101,7 @@ if exc_onco: motivos_exclusion.append("Enfermedad oncológica terminal")
 if exc_epoc: motivos_exclusion.append("Enfermedad respiratoria crónica terminal")
 
 # ==========================================
-# PANEL SUPERIOR DE RESOLUCIÓN MÉDICA
+# 5. PANEL SUPERIOR DE RESOLUCIÓN MÉDICA
 # ==========================================
 st.markdown("---")
 alerta_container = st.container()
@@ -110,23 +114,27 @@ with alerta_container:
         st.success(f"**✅ CUALIFICA PARA INGRESO / SOPORTE TOTAL**\n\nReserva funcional aceptable. Barthel calculado: {puntaje_barthel}/100. No se detectan contraindicaciones absolutas derivadas del performance status previo.", icon="✅")
 
 # ==========================================
-# MARCO TEÓRICO Y BIBLIOGRAFÍA (EXPANDER)
+# 6. MARCO TEÓRICO Y LEGAL (EXPANDER)
 # ==========================================
 st.markdown("<br>", unsafe_allow_html=True)
-with st.expander("📚 Ver Marco Teórico y Sustento Bibliográfico", expanded=False):
+with st.expander("📚 Ver Marco Teórico, Legal y Sustento Bibliográfico", expanded=False):
     st.markdown("""
     ### Fundamento Bioético y Operativo
-    El ingreso a la Unidad de Cuidados Intensivos (UCI) se rige por el principio de **proporcionalidad terapéutica**. Evitar el ingreso de pacientes con enfermedades irreversibles en estadio terminal, fragilidad severa o dependencia total previene la **distanasia** (encarnizamiento terapéutico) y asegura una correcta asignación del recurso cama para pacientes con potencial de recuperación funcional y calidad de vida aceptable.
+    El ingreso a la Unidad de Cuidados Intensivos (UCI) se rige por el principio de **proporcionalidad terapéutica**. Evitar el ingreso de pacientes con enfermedades irreversibles en estadio terminal, fragilidad severa o dependencia total previene la **distanasia** (encarnizamiento terapéutico) y asegura una correcta asignación del recurso cama para pacientes con potencial de recuperación funcional.
+
+    ### Marco Legal y Normativo (República Argentina)
+    Las decisiones de Limitación del Esfuerzo Terapéutico (LET) fundamentadas en parámetros objetivos de futilidad están plenamente amparadas por la legislación vigente, eximiendo al profesional de responsabilidades penales:
+
+    * **Ley Nacional N° 26.529 (Derechos del Paciente) y su modificatoria N° 26.742 (Ley de "Muerte Digna"):** Consagra el derecho del paciente que padezca una enfermedad irreversible, incurable o en estadio terminal, a rechazar procedimientos de reanimación artificial o al retiro de medidas de soporte vital cuando sean extraordinarias o desproporcionadas.
+    * **Código Civil y Comercial de la Nación (Artículos 59 y 60):** Regula de manera estricta el Consentimiento Informado y otorga jerarquía legal a las Directivas Médicas Anticipadas.
+    * **Legislación Provincial (Ley N° 10.058 - Provincia de Córdoba):** Ley de Declaración de Voluntad Anticipada (DVA). Garantiza el derecho a negarse a tratamientos médicos que prolonguen la vida de forma artificial en estados terminales o de inconsciencia permanente, blindando el accionar del equipo médico que respete dicha voluntad o adecue el esfuerzo terapéutico ante la irreversibilidad del cuadro.
 
     ### Justificación de las Escalas de Valoración
-    * **Clinical Frailty Scale (CFS):** Desarrollada y validada por Rockwood et al. Un puntaje **$\ge$ 7** (fragilidad severa) es un predictor independiente de mortalidad a corto plazo (>60% en pacientes bajo ventilación mecánica invasiva) y predice un deterioro funcional catastrófico en los supervivientes tras el alta hospitalaria.
+    * **Clinical Frailty Scale (CFS):** Validada por Rockwood et al. Un puntaje **≥ 7** (fragilidad severa) predice un deterioro funcional catastrófico en los supervivientes tras el alta hospitalaria y es un predictor de mortalidad a corto plazo (>60% bajo ARM).
     * **Performance Status (ECOG / OMS):** Define el impacto de la enfermedad crónica en la autonomía. Un **ECOG 4** (confinamiento total a cama/silla) representa un límite ético consensuado para el inicio de terapias de soporte orgánico pleno.
-    * **Índice de Barthel (ABVD):** Herramienta estándar para medir la dependencia en las Actividades Básicas de la Vida Diaria. Un puntaje consolidado **< 20** indica dependencia total y es un fuerte predictor de mala evolución y futilidad terapéutica en el entorno crítico.
-    * **Escala FAST:** Un estadio **7** (demencia avanzada, pérdida de la marcha y del lenguaje) se categoriza como una enfermedad terminal de trayectoria final predecible, sugiriendo un viraje inmediato hacia los cuidados paliativos.
+    * **Índice de Barthel (ABVD):** Un puntaje consolidado **< 20** indica dependencia total y es un fuerte predictor de mala evolución en el entorno crítico.
+    * **Escala FAST:** Un estadio **7** (demencia avanzada, pérdida de la marcha y del lenguaje) se categoriza como una enfermedad terminal, sugiriendo un viraje inmediato hacia los cuidados paliativos exclusivos.
 
     ### Fuentes y Guías Intersocietarias
-    1.  **Society of Critical Care Medicine (SCCM):** *Guidelines for ICU Admission, Discharge, and Triage.* Establece los estratos de priorización, recomendando no admitir a pacientes de "Prioridad 4" (aquellos sin beneficio terapéutico esperado por futilidad).
-    2.  **Sociedad Argentina de Terapia Intensiva (SAT) / European Society of Intensive Care Medicine (ESICM):** Consensos sobre bioética, triage y adecuación del esfuerzo terapéutico (LET).
-    3.  **Cochrane Database of Systematic Reviews & PubMed:** Metaanálisis recientes sobre el impacto de la ventilación mecánica y las terapias de reemplazo renal en poblaciones ancianas con alta fragilidad basal.
-    4.  **UpToDate:** *Ethics in the intensive care unit: Responding to requests for potentially inappropriate therapies* y *ICU admission and discharge criteria.*
+    1.  **Society of Critical Care Medicine (SCCM):** *Guidelines for ICU Admission, Discharge, and Triage.* 2.  **Sociedad Argentina de Terapia Intensiva (SAT) / Comité de Bioética:** Consensos sobre triage y adecuación del esfuerzo terapéutico (LET).
     """)
